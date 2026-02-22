@@ -1,0 +1,48 @@
+service: venus-backend-users
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  memorySize: 256
+  timeout: 30
+  
+  # IAM Role Statements
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource: "arn:aws:logs:*:*:*"
+  
+  # Environment variables
+  environment:
+    STAGE: ${self:provider.stage}
+
+functions:
+  getUsers:
+    handler: lambda/users/handler.lambda_handler
+    description: Returns a list of users
+    events:
+      - http:
+          path: /users
+          method: get
+          cors: true
+      - http:
+          path: /users
+          method: options
+          cors: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: false
+    slim: true

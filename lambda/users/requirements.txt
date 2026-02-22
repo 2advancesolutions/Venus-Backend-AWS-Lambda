@@ -1,0 +1,2 @@
+# AWS Lambda Python dependencies for users function
+# boto3 and botocore are included by default in Lambda runtime
